@@ -1,0 +1,15 @@
+{
+    "manifest_version": 3,
+    "name": "Robinhood stock resources",
+    "description": "Adds extra resource buttons for the current RH stock page",
+    "version": "1.0",
+    "permissions": ["activeTab", "scripting"],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://robinhood.com/*"
+        ],
+            "js": ["rh-resources.js"]
+        }
+    ]
+}
