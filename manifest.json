@@ -4,6 +4,9 @@
     "description": "Adds extra resource buttons for the current RH stock page",
     "version": "1.0",
     "permissions": ["activeTab", "scripting"],
+    "icons": {
+        "48": "icons/rh_st.png"
+    },
     "content_scripts": [
         {
             "matches": [

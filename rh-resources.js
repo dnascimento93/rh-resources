@@ -1,34 +1,42 @@
 "use strict";
-let stockPage;
-let cryptoPage;
-let buttonCreated = false;
+let getURL, ticker;
+let buttonsCreated = false;
 
-// Check for a button every second
-let checkForButton = setInterval(() => {
-    stockPage = window.location.href.includes('/stocks/');
-    cryptoPage = window.location.href.includes('/crypto/');
+let checkPageForURL = setInterval(() => {
+    getURL = window.location.href;
     
-    // If on a stock page and button does not exist then create one
-    if (stockPage || cryptoPage) {
-        if (!buttonCreated) {
-            createButton();
+    // Check if on a stock or crypto page
+    if (getURL.includes('/stocks/') || getURL.includes('/crypto/')) {
+        // Get the ticker symbol
+        ticker = getTickerSymbol();
+
+        // If buttons haven't been created yet
+        if (!buttonsCreated) {
+            createButtons(ticker);
+        
+        // Buttons have been created but ticker needs to be updated
+        } else if (ticker !== stocktwitsButton.textContent.split(" ")[0]) {
+            removeButtons();
+            createButtons(ticker);
         }
-    
-    // If not on a stock page and button exists then remove it
-    } else if (!stockPage || !cryptoPage) {
-        if (buttonCreated) {
-            removeButton();
-        }
+
+    // Remove the buttons if not on a stock or crypto page
+    } else {
+        removeButtons();
     }
 }, 1000);
 
+function getTickerSymbol() {
+    if (getURL.includes('?')) {
+        getURL = getURL.split('?')[0];
+    }
+    let getTicker = getURL.split('/').filter(Boolean).pop().toUpperCase();
+    return getTicker;
+}
 
-// Create a button and link elements
-const stocktwitsButton = document.createElement("button");
-const stocktwitsLink = document.createElement("a");
+// TODO? make a container for the buttons?
+// const buttonContainer = document.createElement("div");
 
-
-// Copy RH styles as close as possible
 const style = document.createElement("style");
 style.textContent = `
     .rh-resources-button-style {
@@ -39,6 +47,7 @@ style.textContent = `
         font-weight: 800;
         font-size: 12px;
         padding: 6px;
+        margin: 2px;
     }
     .rh-resources-button-style:hover {
         background-color: rgba(38, 208, 43, 1);
@@ -46,42 +55,40 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+const stocktwitsButton = document.createElement("button");
+const stocktwitsLink = document.createElement("a");
+const marketwatchButton = document.createElement("button");
+const marketwatchLink = document.createElement("a");
 stocktwitsButton.classList.add("rh-resources-button-style");
+marketwatchButton.classList.add("rh-resources-button-style");
 
 
-function createButton() {
-    let ticker = getTickerSymbol();
+function createButtons(ticker) {
     stocktwitsButton.textContent = ticker + " StockTwits";
+    marketwatchButton.textContent = ticker + " MarketWatch";
     
-    if (stockPage)
+    if (getURL.includes('/stocks/')) {
         stocktwitsLink.href = "https://stocktwits.com/symbol/" + ticker;
-    else if (cryptoPage)
+        marketwatchLink.href = "https://www.marketwatch.com/investing/stock/" + ticker;
+    } else if (getURL.includes('/crypto/')) {
         stocktwitsLink.href = "https://stocktwits.com/symbol/" + ticker + ".X";
-
-    stocktwitsLink.target = "_blank";
-    stocktwitsLink.appendChild(stocktwitsButton);
-    document.querySelector("h1").insertAdjacentElement("afterend", stocktwitsLink);
-    buttonCreated = true;
-}
-
-
-function removeButton() {
-    stocktwitsButton.remove();
-    buttonCreated = false;
-}
-
-
-function getTickerSymbol() {
-    let getURL = window.location.href;
-
-    if (getURL.includes('?')) {
-        getURL = getURL.split('?')[0];
+        marketwatchLink.href = "https://www.marketwatch.com/investing/cryptocurrency/" + ticker + "usd";
     }
 
-    let getTicker = getURL.split('/');
-    getTicker = getTicker.filter(Boolean);
-    getTicker = getTicker.pop();
-    
-    return getTicker;
+    stocktwitsLink.target = "_blank";
+    marketwatchLink.target = "_blank";
+
+    stocktwitsLink.appendChild(stocktwitsButton);
+    marketwatchLink.appendChild(marketwatchButton);
+
+    document.querySelector("h1").insertAdjacentElement("afterend", stocktwitsLink);
+    document.querySelector("h1").insertAdjacentElement("afterend", marketwatchLink);
+    buttonsCreated = true;
 }
 
+
+function removeButtons() {
+    stocktwitsButton.remove();
+    marketwatchButton.remove();
+    buttonsCreated = false;
+}
