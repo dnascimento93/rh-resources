@@ -1,9 +1,9 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "Robinhood stock resources",
     "description": "Adds extra resource buttons for the current RH stock page",
     "version": "1.0",
-    "permissions": ["activeTab", "https://robinhood.com/*"],
+    "permissions": ["activeTab", "scripting"],
     "icons": {
         "48": "icons/rh_st.png"
     },
